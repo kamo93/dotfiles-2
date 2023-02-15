@@ -11,7 +11,7 @@ create_links() {
 }
 
 isLinux() {
-  return echo $OSTYPE | grep -q "linux"
+  echo $OSTYPE | grep -q "linux"
 }
 
 create_links
