@@ -1,0 +1,82 @@
+"syntax on
+set number
+"set autoindent
+set relativenumber
+set surround
+set commentary
+set ideajoin
+set idearefactormode=keep
+set nohls
+set ignorecase
+set incsearch " incremental search that show partial matches
+set smartcase
+"set shortmess-=S
+set scrolloff=16
+" mapleader to space
+let mapleader = " "
+nnoremap <Leader> <Nop>
+nnoremap <S-l> :action NextTab<CR>
+nnoremap <S-H> :action PreviousTab<CR>
+nnoremap <Leader><esc> :action CloseEditor<CR>
+nnoremap <Leader>l yiwoconsole.log('<esc>pla,<esc>p
+" neovim lsp remap"
+nnoremap <Leader>ff :action SearchEverywhere<CR>
+nnoremap <Leader>gg :action GotoFile<CR>
+nnoremap <Leader>fg :action FindInPath<CR>
+nnoremap <Leader>fb :action RecentFiles<CR>
+nnoremap <Leader>pw viw:action FindInPath<CR>
+nnoremap ]d :action GotoNextError<CR>
+nnoremap [d :action GotoPreviousError<CR>
+nnoremap ]h :action VcsShowNextChangeMarker<CR>
+nnoremap [h :action VcsShowPrevChangeMarker<CR>
+nnoremap gr :action FindUsages<CR>
+" focus FindUsages bottom window
+nnoremap <Leader>r :action ActivateFindToolWindow<CR>
+nnoremap <Leader>s :action SaveAll<CR>
+nnoremap <Leader>e :action ShowErrorDescription<CR>
+nnoremap <Leader>ca :action ShowIntentionActions<CR>
+"--------------NERDTree CONFIG---------------"
+set NERDTree
+nnoremap <Leader>n :NERDTreeFocus<CR>
+nnoremap <Leader>cn :NERDTreeClose<CR>
+"--------------multiple-cursor---------------"
+set multiple-cursors
+
+" Remap multiple-cursors shortcuts to match terryma/vim-multiple-cursors
+nmap <C-n> <Plug>NextWholeOccurrence
+xmap <C-n> <Plug>NextWholeOccurrence
+nmap g<C-n> <Plug>NextOccurrence
+xmap g<C-n> <Plug>NextOccurrence
+nmap <C-x> <Plug>SkipOccurrence
+xmap <C-x> <Plug>SkipOccurrence
+nmap <C-p> <Plug>RemoveOccurrence
+xmap <C-p> <Plug>RemoveOccurrence
+
+" Note that the default <A-n> and g<A-n> shortcuts don't work on Mac due to dead keys.
+" <A-n> is used to enter accented text e.g. ñ
+nmap <S-C-n> <Plug>AllWholeOccurrences
+xmap <S-C-n> <Plug>AllWholeOccurrences
+nmap g<S-C-n> <Plug>AllOccurrences
+xmap g<S-C-n> <Plug>AllOccurrences
+
+" Quickly insert an empty new line without entering insert mode
+nnoremap <Leader>o o<Esc>0"_D
+nnoremap <Leader>O O<Esc>0"_D
+
+" Move faster between buffers "here taps"
+nnoremap <Leader>d :bd<CR>
+" nnoremap <Tab> :bn<CR>
+" nnoremap <S-Tab> :bp<CR>
+
+
+" easy move between split windows
+nnoremap <c-h> <c-w>h
+nnoremap <c-k> <c-w>k
+nnoremap <c-l> <c-w>l
+nnoremap <c-j> <c-w>j
+
+" split vertical current "window"
+nnoremap <Leader>v :action MoveTabRight<CR>
+
+" go previous file fast
+nnoremap <BS> <C-6>
