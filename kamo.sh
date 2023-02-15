@@ -1,13 +1,13 @@
 #!usr/bin/env bash
 
 create_links() {
-  ln -sf "./.zshrc" "~/.zshrc"
-  ln -sf "./.tmux" "~/.tmux"
-  ln -sf "./.tmux.conf" "~/.tmux.conf"
-  ln -sf "./nvim/" "~/.config"
-  ln -sf "./.ideavimrc" "~/.ideavimrc"
-  ln -sf "./.gitconfig" "~/.gitconfig"
-  ln -sf "./kitty.conf" "~/.config/kitty/kitty.conf"
+  ln -sf ./.zshrc ~/.zshrc
+  ln -sf ./.tmux ~/.tmux
+  ln -sf ./.tmux.conf ~/.tmux.conf
+  ln -sf ./nvim/ ~/.config
+  ln -sf ./.ideavimrc ~/.ideavimrc
+  ln -sf ./.gitconfig ~/.gitconfig
+  ln -sf ./kitty.conf ~/.config/kitty/kitty.conf
 }
 
 isLinux() {
