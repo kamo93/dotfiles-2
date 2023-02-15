@@ -1,6 +1,6 @@
 #!usr/bin/env bash
 
-function create_links() {
+create_links() {
   ln -sf "./.zshrc" "~/.zshrc"
   ln -sf "./.tmux" "~/.tmux"
   ln -sf "./.tmux.conf" "~/.tmux.conf"
@@ -10,7 +10,7 @@ function create_links() {
   ln -sf "./kitty.conf" "~/.config/kitty/kitty.conf"
 }
 
-function isLinux() {
+isLinux() {
   return echo $OSTYPE | grep -q "linux"
 }
 
