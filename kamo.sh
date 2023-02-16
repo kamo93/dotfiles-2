@@ -1,12 +1,12 @@
 #!usr/bin/env bash
 
 create_links() {
-  ln -sf ./.zshrc ~/.zshrc
-  ln -sf ./.tmux ~/.tmux
-  ln -sf ./.tmux.conf ~/.tmux.conf
-  ln -sf ./nvim/ ~/.config
-  ln -sf ./.ideavimrc ~/.ideavimrc
-  ln -sf ./.gitconfig ~/.gitconfig
+  ln -sf ~/.zshrc ~/.dotfiles/.zshrc
+  ln -sf ~/.tmux ~/.dotfiles/.tmux
+  ln -sf ~/.tmux.conf ~/.dotfiles/.tmux.conf
+  ln -sf ~/nvim/ ~/.dotfiles/.config
+  ln -sf ~/.ideavimrc ~/.dotfiles/.ideavimrc
+  ln -sf ~/.gitconfig ~/.dotfiles/.gitconfig
   ln -sf ./kitty.conf ~/.config/kitty/kitty.conf
 }
 
@@ -38,3 +38,7 @@ fi
 # install fnm
 # 
 
+
+remove_dotfiles() {
+  # TODO write script to clean all dotfiles most for testing purpose
+}
