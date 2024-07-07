@@ -1,55 +1,91 @@
+local servers = { 
+  'vimls',
+  'jsonls',
+  'tsserver',
+  'eslint',
+  'bashls',
+  'html',
+  'lua_ls',
+  'tailwindcss',
+  'terraformls',
+  'prismals',
+  -- 'csharp_ls'
+  'omnisharp'
+}
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+local init_options = require("nvim-lsp-ts-utils").init_options
 local nvim_lsp = require('lspconfig')
-local configs = require('lspconfig.configs')
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
-  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
-
-  -- Enable completion triggered by <c-x><c-o>
-  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-  -- Mappings.
-  local opts = { noremap=true, silent=true }
-
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
-  buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<space>h', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  buf_set_keymap('n', '<space>t', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
-  buf_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
-  buf_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
-  buf_set_keymap('n', '<space>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
-  buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
-
+local function on_list_extend(options)
+  local items = options.items
+  local resItems = {}
+  if #items > 1 then
+    for _, value in ipairs(items) do
+      if not string.match(value['filename'], 'styled-components') then
+        table.insert(resItems, value)
+      end
+    end
+  else
+    table.insert(resItems, items[1])
+  end
+  vim.fn.setqflist({}, ' ', { title = options.title, items = resItems, context = options.context })
+  vim.api.nvim_command('cfirst')
 end
+
+-- Global mappings.
+-- See `:help vim.diagnostic.*` for documentation on any of the below functions
+vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
+vim.keymap.set('n', '[d', "<cmd>lua vim.diagnostic.goto_prev()<CR>zz")
+vim.keymap.set('n', ']d', "<cmd>lua vim.diagnostic.goto_next()<CR>zz")
+vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
+
+-- Use LspAttach autocommand to only map the following keys
+-- after the language server attaches to the current buffer
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(ev)
+    -- Enable completion triggered by <c-x><c-o>
+    vim.bo[ev.buf].omnifunc = 'v.:lua.vim.lsp.omnifunc'
+
+    -- Buffer local mappings.
+    -- See `:help vim.lsp.*` for documentation on any of the below functions
+    local opts = { buffer = ev.buf }
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+    vim.keymap.set('n', 'gd', function()
+      vim.lsp.buf.definition({ on_list = on_list_extend })
+    end, { buffer = ev.buf, silent = true })
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    vim.keymap.set('n', '<space>h', vim.lsp.buf.signature_help, opts)
+    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
+    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
+    vim.keymap.set('n', '<space>wl', function()
+      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, opts)
+    vim.keymap.set('n', '<C-T>', vim.lsp.buf.type_definition, opts)
+    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
+    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+    -- buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+    vim.keymap.set('n', '<space>f', function()
+      vim.lsp.buf.format { async = true }
+    end, opts)
+  end
+})
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
 -- local servers = { 'vimls', 'jsonls', 'tsserver', 'eslint', 'bashls', 'html', 'tailwindcss' }
-local servers = { 'vimls', 'jsonls', 'emmet_ls', 'tsserver', 'eslint','bashls', 'html', 'sumneko_lua', 'tailwindcss'}
-local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-local init_options = require("nvim-lsp-ts-utils").init_options
-init_options.plugins = { { name = 'typescript-styled-plugin', location = 'typescript-styled-plugin' } }
+init_options.plugins = { { name = '@styled/typescript-styled-plugin', location = '@styled/typescript-styled-plugin' } }
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 for _, lsp in ipairs(servers) do
-	if lsp == "tsserver" then
-		nvim_lsp.tsserver.setup({
-			-- Needed for inlayHints. Merge this table with your settings or copy
-			-- it from the source if you want to add your own init_options.
-			init_options = init_options,
-			capabilities = capabilities,
-			--
+  if lsp == "tsserver" then
+    nvim_lsp.tsserver.setup({
+      -- Needed for inlayHints. Merge this table with your settings or copy
+      -- it from the source if you want to add your own init_options.
+      init_options = init_options,
+      capabilities = capabilities,
+      --
       on_attach = function(client, bufnr)
         local ts_utils = require("nvim-lsp-ts-utils")
 
@@ -95,89 +131,101 @@ for _, lsp in ipairs(servers) do
         vim.api.nvim_buf_set_keymap(bufnr, "n", "<space>gi", ":TSLspImportAll<CR>", opts)
       end,
     })
-	elseif lsp == "bashls" then
-		nvim_lsp.bashls.setup {
-			on_attach = on_attach,
-			filetypes = { "sh", "zsh" },
-			capabilities = capabilities,
-		}
-	elseif lsp == "sumneko_lua" then
-		nvim_lsp.sumneko_lua.setup {
+  elseif lsp == "bashls" then
+    nvim_lsp.bashls.setup {
+      on_attach = on_attach,
+      filetypes = { "sh", "zsh" },
       capabilities = capabilities,
-			settings = {
-				Lua = {
-					runtime = {
-						-- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-						version = 'LuaJIT',
-						path = runtime_path,
-					},
-					diagnostics = {
-						-- Get the language server to recognize the `vim` global
-						globals = { 'vim' },
-					},
-					workspace = {
-						-- Make the server aware of Neovim runtime files
-						library = vim.api.nvim_get_runtime_file("", true)
-					},
-					telemetry = {
-						-- Do not send telemetry data containing a randomized but unique identifier
-						enable = false
-					}
-				},
-			}
-		}
-	else
-		nvim_lsp[lsp].setup {
-			on_attach = on_attach,
-			capabilities = capabilities,
-			sync = true,
+    }
+  -- elseif lsp == "eslint" then
+  --   nvim_lsp.eslint.setup{
+  --     capabilities = capabilities,
+  --     filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue", "svelte", "astro", "markdown" }
+  --   }
+  elseif lsp == "lua_ls" then
+    nvim_lsp.lua_ls.setup {
+      capabilities = capabilities,
+      settings = {
+        Lua = {
+          runtime = {
+            -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+            version = 'LuaJIT',
+            path = runtime_path,
+          },
+          diagnostics = {
+            -- Get the language server to recognize the `vim` global
+            globals = { 'vim' },
+          },
+          workspace = {
+            -- Make the server aware of Neovim runtime files
+            library = vim.api.nvim_get_runtime_file("", true)
+          },
+          telemetry = {
+            -- Do not send telemetry data containing a randomized but unique identifier
+            enable = false
+          }
+        },
+      }
+    }
+  -- elseif lsp == "omnisharp" then
+  --   nvim_lsp.omnisharp.setup {
+  --     cmd = { "dotnet", "/home/kamo93/.omnisharp/OmniSharp.dll" },
+  --     -- Enables support for reading code style, naming convention and analyzer
+  --     -- settings from .editorconfig.
+  --     enable_editorconfig_support = true,
+  --
+  --     -- If true, MSBuild project system will only load projects for files that
+  --     -- were opened in the editor. This setting is useful for big C# codebases
+  --     -- and allows for faster initialization of code navigation features only
+  --     -- for projects that are relevant to code that is being edited. With this
+  --     -- setting enabled OmniSharp may load fewer projects and may thus display
+  --     -- incomplete reference lists for symbols.
+  --     enable_ms_build_load_projects_on_demand = false,
+  --
+  --     -- Enables support for roslyn analyzers, code fixes and rulesets.
+  --     enable_roslyn_analyzers = false,
+  --
+  --     -- Specifies whether 'using' directives should be grouped and sorted during
+  --     -- document formatting.
+  --     organize_imports_on_format = false,
+  --
+  --     -- Enables support for showing unimported types and unimported extension
+  --     -- methods in completion lists. When committed, the appropriate using
+  --     -- directive will be added at the top of the current file. This option can
+  --     -- have a negative impact on initial completion responsiveness,
+  --     -- particularly for the first few completion sessions after opening a
+  --     -- solution.
+  --     enable_import_completion = false,
+  --
+  --     -- Specifies whether to include preview versions of the .NET SDK when
+  --     -- determining which version to use for project loading.
+  --     sdk_include_prereleases = true,
+  --
+  --     -- Only run analyzers against open files when 'enableRoslynAnalyzers' is
+  --     -- true
+  --     analyze_open_documents_only = false,
+  --     filetypes = { "cs", "vb", "cshtml" }
+  --   }
+  else
+    nvim_lsp[lsp].setup {
+      on_attach = on_attach,
+      capabilities = capabilities,
+      sync = true,
       root_dir = function(fname)
         return vim.loop.cwd()
       end;
-		}
-	end
+    }
+  end
 end
 
--- if not configs.ls_emmet then
---   configs.ls_emmet = {
---     default_config = {
---       cmd = { 'ls_emmet', '--stdio' };
---       filetypes = {
---         'html',
---         'css',
---         'scss',
---         'javascript',
---         'javascriptreact',
---         'typescript',
---         'typescriptreact',
---         'haml',
---         'xml',
---         'xsl',
---         'pug',
---         'slim',
---         'sass',
---         'stylus',
---         'less',
---         'sss',
---         'hbs',
---         'handlebars',
---       };
---       root_dir = function(fname)
---         return vim.loop.cwd()
---       end;
---       settings = {};
---     };
---   }
--- end
--- nvim_lsp.ls_emmet.setup { capabilities = capabilities }
 
 vim.diagnostic.config({
-	virtual_text = {
-		source  = "always"
-	},
-	float = {
-		source = "always"
-	},
+  virtual_text = {
+    source = "always"
+  },
+  float = {
+    source = "always"
+  },
 })
 
 -- config bash-language-server
@@ -187,3 +235,11 @@ let g:LanguageClient_serverCommands = {
 	\ 'zsh': ['bash-language-server', 'start'] 
 	\}
 ]])
+
+-- https://github.com/hashicorp/terraform-ls/blob/main/docs/USAGE.md
+vim.api.nvim_create_autocmd({"BufWritePre"}, {
+  pattern = {"*.tf", "*.tfvars"},
+  callback = function()
+    vim.lsp.buf.format()
+  end,
+})

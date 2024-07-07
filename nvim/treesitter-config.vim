@@ -34,7 +34,6 @@ configs.setup {
         comment = '// %s'
 			}
 		}
-	}
 	--[[playground = {
 		enable = false,
 		disable = {},

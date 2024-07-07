@@ -11,6 +11,7 @@ vim.o.relativenumber    = true                                  -- set relative 
 vim.o.shortmess         = vim.o.shortmess.."c"                  -- Avoid showing message extra message when using completion but keep showing other important messages
 vim.o.tabstop           = 2                                     -- the tab spaces default 8 change to 2
 vim.cmd("set softtabstop=0 expandtab")
+vim.cmd("set cursorline")                                       -- hightlight current line number
 vim.o.shiftwidth        = 2                                     -- define how many columns of whitespace a level of indentation worth
 vim.o.smarttab          = true                                  -- when expandtab and softtabstop is different from shiftwidth let you always put a tab after endline??
 vim.o.smartindent       = true                                  -- make a indent more 'intelligent'
@@ -34,21 +35,50 @@ vim.o.hidden            = true                                  -- let you leave
 vim.api.nvim_command('autocmd FocusGained * checktime')
 vim.api.nvim_command('autocmd CursorHold * checktime')
 vim.o.termguicolors     = true                                  -- enables 24 bit rgb color
-vim.o.laststatus        = 3                                     -- new neovim feature to have just one main status line
-local group = vim.api.nvim_create_augroup('js-autocmd', {})
-local js_pattern = { '*.tsx', '*.ts', '*.jsx', '*.js' }
+vim.o.laststatus        = 3                                     -- new neovim feature to have just one main status lines
+vim.cmd("set splitright")                                       -- open vssplit on the right
+vim.cmd("set splitbelow")                                       -- open split on the bottom
 
-vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = js_pattern,
-  command = 'silent! EslintFixAll',
-  group = group
-})
+vim.cmd[[
+  runtime! macros/matchit.vim
+]]
 
-vim.api.nvim_create_autocmd('BufNew', {
-  pattern = js_pattern,
+-- local group = vim.api.nvim_create_augroup('js-autocmd', {})
+-- local js_pattern = { '*.tsx', '*.ts', '*.jsx', '*.js' }
+
+-- vim.api.nvim_create_autocmd('bufwritepre', {
+--   pattern = js_pattern,
+--   command = 'silent! eslintfixall',
+--   group = group
+-- })
+
+-- vim.api.nvim_create_autocmd('BufWinEnter', {
+--   pattern = js_pattern,
+--   callback = function ()
+--     local buf = vim.api.nvim_get_current_buf()
+--     vim.api.nvim_buf_set_keymap(buf, 'n', '<leader>l', "yiwoconsole.log('<esc>pa',<esc>pa)<esc>", { noremap = true })
+--   end,
+--   group = group
+-- })
+
+-- vim.api.nvim_create_autocmd('TermOpen', {
+--   group = vim.api.nvim_create_augroup('term-open-custom-au', {}),
+--   pattern = "term://*",
+--   callback = function ()
+--     local bufnr = vim.api.nvim_get_current_buf()
+--     print(vim.inspect(vim.bo[bufnr]))
+--     print(vim.inspect(vim.bo))
+--     print(bufnr)
+--     -- vim.api.nvim_buf_set_option(bufnr, 'number', false)
+--     print(vim.api.nvim_buf_get_option(bufnr, 'relativenumber'))
+--     -- vim.opt_local.nonumber = true
+--     -- vim.opt_local.norelativenumber = true
+--   end
+-- })
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'FugitiveIndex',
+  group = vim.api.nvim_create_augroup('FugitiveIndexCustom', { clear = true }),
   callback = function ()
-    local buf = vim.api.nvim_get_current_buf()
-    vim.api.nvim_buf_set_keymap(buf, 'n', '<leader>l', "yiwoconsole.log('<esc>pa',<esc>pa)<esc>", { noremap = true })
-  end,
-  group = group
+    vim.keymap.set('n', 'cc', ":vertical Git commit <CR>", { buffer = true })
+  end
 })

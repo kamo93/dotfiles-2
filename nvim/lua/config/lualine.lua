@@ -1,7 +1,7 @@
 require'lualine'.setup {
   options = {
     icons_enabled = true,
-    theme = 'onedark',
+    theme = 'catppuccin',
     component_separators = { left = '', right = ''},
     section_separators = { left = '', right = ''},
     disabled_filetypes = {},
@@ -9,7 +9,20 @@ require'lualine'.setup {
   },
   sections = {
     lualine_a = {'mode'},
-    lualine_b = {'branch', 'diff', 'diagnostics'},
+    lualine_b = {'branch', 'diff', 
+      { 
+        -- manually add this symbols becuase there some change on nerdfont 
+        -- and lualine update those icons but there are not regnoize on linux right now june 15
+        -- PR with changes https://github.com/nvim-lualine/lualine.nvim/pull/1033/files
+        "diagnostics",
+        symbols = { 
+          error = " ",
+          warn = " ",
+          info = " ",
+          hint = " "
+        },
+      }
+    },
     lualine_c = {
       {
         'filename',

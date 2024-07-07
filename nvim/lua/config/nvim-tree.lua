@@ -2,6 +2,10 @@
 -- each of these are documented in `:help nvim-tree.OPTION_NAME`
 -- nested options are documented by accessing them with `.` (eg: `:help nvim-tree.view.mappings.list`).
 --
+
+local HEIGHT_RATIO = 0.8  -- You can change this
+local WIDTH_RATIO = 0.8   -- You can change this too
+
 require'nvim-tree'.setup { -- BEGIN_DEFAULT_OPTS
   auto_reload_on_write = true,
   disable_netrw = false,
@@ -14,24 +18,58 @@ require'nvim-tree'.setup { -- BEGIN_DEFAULT_OPTS
   open_on_tab = false,
   sort_by = "name",
   update_cwd = false,
+  on_attach = function (bufnr)
+    local api = require("nvim-tree.api")
+    vim.keymap.set("n", "<esc>", api.tree.close, { buffer = bufnr, noremap = true })
+  end,
   view = {
-    width = 30,
-    hide_root_folder = false,
-    side = "left",
-    preserve_window_proportions = false,
-    number = false,
-    relativenumber = false,
-    signcolumn = "yes",
-    mappings = {
-      custom_only = false,
-      list = {
-        -- user mappings go here
-      },
+    float = { 
+      enable = true,
+      quit_on_focus_loss = true,
+      open_win_config = function()
+        local screen_w = vim.opt.columns:get()
+        local screen_h = vim.opt.lines:get() - vim.opt.cmdheight:get()
+        local window_w = screen_w * WIDTH_RATIO
+        local window_h = screen_h * HEIGHT_RATIO
+        local window_w_int = math.floor(window_w)
+        local window_h_int = math.floor(window_h)
+        local center_x = (screen_w - window_w) / 2
+        local center_y = ((vim.opt.lines:get() - window_h) / 2)
+        - vim.opt.cmdheight:get()
+        return {
+          border = 'rounded',
+          relative = 'editor',
+          row = center_y,
+          col = center_x,
+          width = window_w_int,
+          height = window_h_int,
+        }
+      end,
+      -- open_win_config = {
+      --   relative = "editor", -- editor works fine it adapts to use split pane tmux, try win did't adapt
+      --   border = "rounded",
+      --   width = vim.api.nvim_win_get_width(vim.api.nvim_get_current_win()) - 20, -- more width that hieght cause screen normally has more width that height
+      --   height = vim.api.nvim_win_get_height(vim.api.nvim_get_current_win()) - 10,
+      --   row = 4,
+      --   col = 8
+      -- },
     },
+    -- width = "80%", -- more width that hieght cause screen normally has more width that height
+    adaptive_size = false, -- if name is too long it adapt to show the complete name
+    preserve_window_proportions = true,
+    number = false,
+    relativenumber = true,
+    signcolumn = "yes",
+    -- mappings = {
+    --   custom_only = false,
+    --   list = {
+    --     -- user mappings go here
+    --   },
+    -- },
   },
   renderer = {
     indent_markers = {
-      enable = false,
+      enable = true,
       icons = {
         corner = "└ ",
         edge = "│ ",
