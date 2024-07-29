@@ -10,6 +10,12 @@ local WIDTH_RATIO = 0.8   -- You can change this too
 require'nvim-tree'.setup {
   on_attach = function (bufnr)
     local api = require("nvim-tree.api")
+
+    -- ALWAYS KEEP THIS WHILE HAVING A CUSTOM ON_ATTACH
+    -- default mappings
+    api.config.mappings.default_on_attach(bufnr)
+
+    -- custom mappings
     vim.keymap.set("n", "<esc>", api.tree.close, { buffer = bufnr, noremap = true })
   end,
   hijack_cursor = false,
