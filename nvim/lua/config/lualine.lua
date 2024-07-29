@@ -1,3 +1,5 @@
+-- this plugin will make the init neovim page flash and dissapear
+-- check https://github.com/nvim-lualine/lualine.nvim/issues/983
 require'lualine'.setup {
   options = {
     icons_enabled = true,

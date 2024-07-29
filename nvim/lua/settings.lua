@@ -39,7 +39,11 @@ vim.o.laststatus        = 3                                     -- new neovim fe
 vim.cmd("set splitright")                                       -- open vssplit on the right
 vim.cmd("set splitbelow")                                       -- open split on the bottom
 
+-- vim.g.is_bash           = 1                                     -- Automatically stablish .sh files as bash files ## more info -> https://stackoverflow.com/questions/7450395/vim-inconsistently-syntax-highlighting-bash-files
+-- vim.cmd("let g:is_bash=1")
+
 vim.cmd[[
+  let g:is_bash=1
   runtime! macros/matchit.vim
 ]]
 

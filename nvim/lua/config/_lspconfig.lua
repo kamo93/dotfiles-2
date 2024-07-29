@@ -13,7 +13,7 @@ local servers = {
   'omnisharp'
 }
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-local init_options = require("nvim-lsp-ts-utils").init_options
+-- local init_options = require("nvim-lsp-ts-utils").init_options
 local nvim_lsp = require('lspconfig')
 
 local function on_list_extend(options)
@@ -76,14 +76,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
 -- local servers = { 'vimls', 'jsonls', 'tsserver', 'eslint', 'bashls', 'html', 'tailwindcss' }
-init_options.plugins = { { name = '@styled/typescript-styled-plugin', location = '@styled/typescript-styled-plugin' } }
+-- init_options.plugins = { { 
+--   name = '@styled/typescript-styled-plugin',
+--   location = '@styled/typescript-styled-plugin' 
+-- } }
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 for _, lsp in ipairs(servers) do
   if lsp == "tsserver" then
     nvim_lsp.tsserver.setup({
       -- Needed for inlayHints. Merge this table with your settings or copy
       -- it from the source if you want to add your own init_options.
-      init_options = init_options,
+      -- init_options = init_options,
       capabilities = capabilities,
       --
       on_attach = function(client, bufnr)
@@ -133,9 +136,7 @@ for _, lsp in ipairs(servers) do
     })
   elseif lsp == "bashls" then
     nvim_lsp.bashls.setup {
-      on_attach = on_attach,
-      filetypes = { "sh", "zsh" },
-      capabilities = capabilities,
+      filetypes = { "sh", "zsh", "bash"},
     }
   -- elseif lsp == "eslint" then
   --   nvim_lsp.eslint.setup{
@@ -229,12 +230,12 @@ vim.diagnostic.config({
 })
 
 -- config bash-language-server
-vim.cmd([[
-let g:LanguageClient_serverCommands = {
-	\ 'sh': ['bash-language-server', 'start'],
-	\ 'zsh': ['bash-language-server', 'start'] 
-	\}
-]])
+-- vim.cmd([[
+-- let g:LanguageClient_serverCommands = {
+-- 	\ 'sh': ['bash-language-server', 'start'],
+-- 	\ 'zsh': ['bash-language-server', 'start'] 
+-- 	\}
+-- ]])
 
 -- https://github.com/hashicorp/terraform-ls/blob/main/docs/USAGE.md
 vim.api.nvim_create_autocmd({"BufWritePre"}, {
