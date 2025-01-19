@@ -12,7 +12,7 @@ ZSH_THEME="spaceship"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
+# a theme from this variable instead of looking in $ZSH/theme/
 # If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
@@ -70,7 +70,8 @@ ZSH_THEME="spaceship"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git node vi-mode tmux zsh-syntax-highlighting)
+plugins=(git node vi-mode tmux fast-syntax-highlighting)
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 
 source $ZSH/oh-my-zsh.sh
 
@@ -105,28 +106,59 @@ source $ZSH/oh-my-zsh.sh
 #export PATH=/home/kamo93/.local/bin:$PATH
 #
 # export z script https://github.com/rupa/z
-. ~/.config/z/z.sh
+# . ~/.config/z/z.sh
 # fnm #robo3t
-export PATH=/usr/local/bin/robo3t:$PATH
+export PATH=/usr/local/bin/robo3t/bin:$PATH
 export PATH=/home/kamo93/.fnm:$PATH
 export PATH=/home/kamo93/lua-language-server/bin/:$PATH
+export PATH=/usr/local:$PATH
+export PATH=/opt/mssql-tools18/bin:$PATH
+export PATH=~/bin:$PATH
+export PATH=~/.local/kitty.app/bin:$PATH
 export EDITOR='nvim'
-eval "`fnm env --use-on-cd`"
-alias nzsh="nvim ~/.zshrc"
+eval "`fnm env`"
+alias zshconf="nvim ~/.zshrc"
 alias robo3t="robo3t &"
 alias vconf='cd ~/.config/nvim && nvim init.lua'
-alias sozsh="source ~/.zshrc"
-alias open-freeze="(cd ~/Downloads/OpenFreezeCenter/ ; sh at_startup.sh)"
+
+# use omz as stated on docs 
+# https://github.com/ohmyzsh/ohmyzsh/wiki/Cheatsheet
+# To apply changes made to .zshrc: omz reload (this just runs exec zsh). Do NOT run source ~/.zshrc.
+alias rzsh="omz reload"
+alias open-freeze="(cd ~/Downloads/OpenFreezeCenter/ ; sudo ./at_startup.sh)"
+# open files on file explorer
+alias of="gio open"
 
 # set vi mode mark enable
 eval spaceship_vi_mode_enable
 alias ohmyzsh="nvim ~/.oh-my-zsh"
+
+# ****************** OPTIONS *****************
+# How many commands zsh will load to memory.
+export HISTSIZE=10000
+
+# How many commands history will save on file.
+export SAVEHIST=10000
+
+# History won't save duplicates.
+setopt HIST_IGNORE_ALL_DUPS
+
+# History won't show duplicates on search.
+setopt HIST_FIND_NO_DUPS
+
+setopt INC_APPEND_HISTORY
 
 export TERM=xterm-256color
 
 # fzf settings
 export FZF_DEFAULT_COMMAND='gp --type f --hidden --follow --exclude .git'	
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+# *********** END OPTIONS ***********
+
+# neovim suggestion
+if [ -n "$TMUX" ]; then
+    export TERM=screen-256color
+fi
 
 fzf-git-branch(){
 	git rev-parse HEAD > /dev/null 2>&1 || return
@@ -156,8 +188,37 @@ fzf-git-checkout() {
 alias fgb='fzf-git-branch'
 alias fgco='fzf-git-checkout'
 
-source /usr/share/doc/fzf/examples/key-bindings.zsh
-source /usr/share/doc/fzf/examples/completion.zsh
+# source /usr/share/doc/fzf/examples/key-bindings.zsh
+# source /usr/share/doc/fzf/examples/completion.zsh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 alias luamake=/home/kamo93/lua-language-server/3rd/luamake/luamake
+
+eval "`zoxide init zsh`"
+
+# zsh parameter completion for the dotnet CLI
+_dotnet_zsh_complete()
+{
+  local completions=("$(dotnet complete "$words")")
+
+  # If the completion list is empty, just continue with filename selection
+  if [ -z "$completions" ]
+  then
+    _arguments '*::arguments: _normal'
+    return
+  fi
+
+  # This is not a variable assignment, don't remove spaces!
+  _values = "${(ps:\n:)completions}"
+}
+
+compdef _dotnet_zsh_complete dotnet
+
+zstyle ':completion:*' select-prompt ''
+# Bind 'j' and 'k' for navigation in menu selection
+bindkey -M menuselect 'j' down-line-or-history
+bindkey -M menuselect 'k' up-line-or-history
+
+# Bind 'h' and 'l' for left and right navigation
+bindkey -M menuselect 'h' backward-char
+bindkey -M menuselect 'l' forward-char

@@ -9,6 +9,8 @@ if [ "$OS" == "Linux" ]; then
   echo "git install"
   apt-get install git-all -y
   echo "git install end version **$(git --version | sed 's/git version//g') **"
+  git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
   rm -f -R ./.dotfiles/
   ls_count=$(ls -la ./.dotfiles | wc -l)
   if (($ls_count == 0)); then

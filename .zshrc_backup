@@ -107,8 +107,7 @@ source $ZSH/oh-my-zsh.sh
 # export z script https://github.com/rupa/z
 . ~/.config/z/z.sh
 # fnm #robo3t
-export PATH=/usr/local/bin/robo3t:$PATH
-export PATH=/home/kamo93/.fnm:$PATH
+export PATH=/usr/local/bin/robo3t/bin:/home/kamo93/.fnm:$PATH
 export PATH=/home/kamo93/lua-language-server/bin/:$PATH
 export EDITOR='nvim'
 eval "`fnm env --use-on-cd`"
