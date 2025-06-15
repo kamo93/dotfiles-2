@@ -3,10 +3,10 @@ if not lsp_signature_status_ok then
 	return
 end
 
-lsp_signature.setup({
-	bind= true,
-	handler_opts = {
-		border = "rounded"
-	},
-	hint_enable = false
-})
+-- lsp_signature.setup({
+--   bind= true,
+--   handler_opts = {
+--     border = "rounded"
+--   },
+--   hint_enable = false
+-- })

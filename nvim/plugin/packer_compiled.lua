@@ -49,8 +49,8 @@ local function save_profiles(threshold)
 end
 
 time([[Luarocks path setup]], true)
-local package_path_str = "/home/kamo93/.cache/nvim/packer_hererocks/2.1.0-beta3/share/lua/5.1/?.lua;/home/kamo93/.cache/nvim/packer_hererocks/2.1.0-beta3/share/lua/5.1/?/init.lua;/home/kamo93/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/luarocks/rocks-5.1/?.lua;/home/kamo93/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/luarocks/rocks-5.1/?/init.lua"
-local install_cpath_pattern = "/home/kamo93/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/lua/5.1/?.so"
+local package_path_str = "/home/kamo93/.cache/nvim/packer_hererocks/2.1.1713484068/share/lua/5.1/?.lua;/home/kamo93/.cache/nvim/packer_hererocks/2.1.1713484068/share/lua/5.1/?/init.lua;/home/kamo93/.cache/nvim/packer_hererocks/2.1.1713484068/lib/luarocks/rocks-5.1/?.lua;/home/kamo93/.cache/nvim/packer_hererocks/2.1.1713484068/lib/luarocks/rocks-5.1/?/init.lua"
+local install_cpath_pattern = "/home/kamo93/.cache/nvim/packer_hererocks/2.1.1713484068/lib/lua/5.1/?.so"
 if not string.find(package.path, package_path_str, 1, true) then
   package.path = package.path .. ';' .. package_path_str
 end
@@ -78,6 +78,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/kamo93/.local/share/nvim/site/pack/packer/start/Comment.nvim",
     url = "https://github.com/numToStr/Comment.nvim"
+  },
+  ["CopilotChat.nvim"] = {
+    loaded = true,
+    path = "/home/kamo93/.local/share/nvim/site/pack/packer/start/CopilotChat.nvim",
+    url = "https://github.com/CopilotC-Nvim/CopilotChat.nvim"
   },
   LuaSnip = {
     loaded = true,
@@ -114,6 +119,11 @@ _G.packer_plugins = {
     path = "/home/kamo93/.local/share/nvim/site/pack/packer/start/cmp_luasnip",
     url = "https://github.com/saadparwaiz1/cmp_luasnip"
   },
+  ["copilot.vim"] = {
+    loaded = true,
+    path = "/home/kamo93/.local/share/nvim/site/pack/packer/start/copilot.vim",
+    url = "https://github.com/github/copilot.vim"
+  },
   ["friendly-snippets"] = {
     loaded = true,
     path = "/home/kamo93/.local/share/nvim/site/pack/packer/start/friendly-snippets",
@@ -123,11 +133,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/kamo93/.local/share/nvim/site/pack/packer/start/indent-blankline.nvim",
     url = "https://github.com/lukas-reineke/indent-blankline.nvim"
-  },
-  ["lsp_signature.nvim"] = {
-    loaded = true,
-    path = "/home/kamo93/.local/share/nvim/site/pack/packer/start/lsp_signature.nvim",
-    url = "https://github.com/ray-x/lsp_signature.nvim"
   },
   ["lualine.nvim"] = {
     loaded = true,
@@ -151,14 +156,6 @@ _G.packer_plugins = {
     path = "/home/kamo93/.local/share/nvim/site/pack/packer/start/mason.nvim",
     url = "https://github.com/williamboman/mason.nvim"
   },
-  ["nvim-autopairs"] = {
-    config = { "\27LJ\2\n@\0\0\3\0\3\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0004\2\0\0B\0\2\1K\0\1\0\nsetup\19nvim-autopairs\frequire\0" },
-    loaded = false,
-    needs_bufread = false,
-    only_cond = false,
-    path = "/home/kamo93/.local/share/nvim/site/pack/packer/opt/nvim-autopairs",
-    url = "https://github.com/windwp/nvim-autopairs"
-  },
   ["nvim-cmp"] = {
     loaded = true,
     path = "/home/kamo93/.local/share/nvim/site/pack/packer/start/nvim-cmp",
@@ -178,6 +175,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/kamo93/.local/share/nvim/site/pack/packer/start/nvim-dap-virtual-text",
     url = "https://github.com/theHamsta/nvim-dap-virtual-text"
+  },
+  ["nvim-lsp-ts-utils"] = {
+    loaded = true,
+    path = "/home/kamo93/.local/share/nvim/site/pack/packer/start/nvim-lsp-ts-utils",
+    url = "https://github.com/jose-elias-alvarez/nvim-lsp-ts-utils"
   },
   ["nvim-lspconfig"] = {
     loaded = true,
@@ -333,10 +335,6 @@ vim.cmd [[au!]]
 time([[Defining lazy-load filetype autocommands]], true)
 vim.cmd [[au FileType markdown ++once lua require("packer.load")({'markdown-preview.nvim'}, { ft = "markdown" }, _G.packer_plugins)]]
 time([[Defining lazy-load filetype autocommands]], false)
-  -- Event lazy-loads
-time([[Defining lazy-load event autocommands]], true)
-vim.cmd [[au InsertEnter * ++once lua require("packer.load")({'nvim-autopairs'}, { event = "InsertEnter *" }, _G.packer_plugins)]]
-time([[Defining lazy-load event autocommands]], false)
 vim.cmd("augroup END")
 
 _G._packer.inside_compile = false

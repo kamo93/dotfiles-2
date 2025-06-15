@@ -19,8 +19,9 @@ vim.keymap.set('v', '<', '<gv', { noremap = true, silent = true })
 vim.keymap.set('v', '>', '>gv', { noremap = true, silent = true })
 
 -- move between buffers using TAB
-vim.keymap.set('n', "<S-l>", ":bnext<CR>", { noremap = true, silent = true })
-vim.keymap.set('n', "<S-h>", ":bprevious<CR>", { noremap = true, silent = true })
+-- TODO remove this is weird cause when you have been working on various buffer for long time you forget which is the order
+-- vim.keymap.set('n', "<S-l>", ":bnext<CR>", { noremap = true, silent = true })
+-- vim.keymap.set('n', "<S-h>", ":bprevious<CR>", { noremap = true, silent = true })
 
 -- close buffer by change to previous buffer and then remove previous buffer
 vim.keymap.set('n', '<leader>d', ':bp|bd#<cr>', { silent = true })

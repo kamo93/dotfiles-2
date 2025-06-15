@@ -13,6 +13,14 @@ return require("packer").startup(function(use)
   use "tpope/vim-surround"
   use "tpope/vim-repeat"
   use "tpope/vim-sensible"
+  use {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    requires = {
+      "github/copilot.vim", -- or zbirenbaum/copilot.lua
+      "nvim-lua/plenary.nvim", -- for curl, log and async functions
+    },
+    run = "make tiktoken"
+  }
 
   -- git
   use "tpope/vim-fugitive"
@@ -24,27 +32,70 @@ return require("packer").startup(function(use)
   -- use "olimorris/onedarkpro.nvim"
   -- use {"rebelot/kanagawa.nvim", commit = 'fc2e308'}
   -- use "folke/tokyonight.nvim"
-  use { "catppuccin/nvim", as = "catppuccin" }
+  if not vim.g.vscode then
+    use { "catppuccin/nvim", as = "catppuccin" }
 
-  -- Telescope
-  -- based on https://github.com/wbthomason/dotfiles/blob/linux/neovim/.config/nvim/lua/plugins.lua#L64
-  use {
-    "nvim-telescope/telescope.nvim",
-    requires = {
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope-ui-select.nvim",
-      "nvim-telescope/telescope-live-grep-args.nvim"
-    },
-    config = function ()
-      require("telescope").load_extension("live_grep_args")
-    end,
-    wants = {
-      "plenary.nvim"
-    },
-  }
-  use { "nvim-telescope/telescope-fzf-native.nvim", run = "make" }
-  use "natecraddock/telescope-zf-native.nvim"
-  use "smartpde/telescope-recent-files"
+    -- Telescope
+    -- based on https://github.com/wbthomason/dotfiles/blob/linux/neovim/.config/nvim/lua/plugins.lua#L64
+    use {
+      "nvim-telescope/telescope.nvim",
+      requires = {
+	"nvim-lua/plenary.nvim",
+	"nvim-telescope/telescope-ui-select.nvim",
+	"nvim-telescope/telescope-live-grep-args.nvim"
+      },
+      config = function ()
+	require("telescope").load_extension("live_grep_args")
+      end,
+      wants = {
+	"plenary.nvim"
+      }
+    }
+    use { "nvim-telescope/telescope-fzf-native.nvim", run = "make" }
+    use "natecraddock/telescope-zf-native.nvim"
+    use "smartpde/telescope-recent-files"
+
+    -- Autocompletion
+    use "hrsh7th/cmp-nvim-lsp"
+    use "hrsh7th/cmp-buffer"
+    use "hrsh7th/cmp-path"
+    use "hrsh7th/cmp-cmdline"
+    use "hrsh7th/nvim-cmp"
+    -- use "ray-x/lsp_signature.nvim"
+    -- For vsnip usersp.
+    use({
+      "L3MON4D3/LuaSnip",
+      tag = "v2,*",
+      run = "make install_jsregexp"
+    })
+    use "saadparwaiz1/cmp_luasnip"
+    use "rafamadriz/friendly-snippets"
+
+    use "nvim-tree/nvim-web-devicons"
+    use {
+      "nvim-tree/nvim-tree.lua",
+      requires = {
+	"nvim-tree/nvim-web-devicons",
+      }
+    }
+    use "mbbill/undotree" -- plugins using treesitter power
+    use "nvim-lualine/lualine.nvim"
+    use {
+      'nvim-treesitter/nvim-treesitter',
+      run = function()
+	local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
+	ts_update()
+      end,
+    }
+    use "p00f/nvim-ts-rainbow"
+    use "windwp/nvim-ts-autotag"
+    use "JoosepAlviste/nvim-ts-context-commentstring"
+    use "lukas-reineke/indent-blankline.nvim"
+    use "nvim-treesitter/playground"
+
+    -- its deprecated but it still works for me
+    use "jose-elias-alvarez/nvim-lsp-ts-utils"
+  end
 
   -- use {
   --   "nvim-telescope/telescope-z.nvim",
@@ -66,53 +117,15 @@ return require("packer").startup(function(use)
   -- }
   --
 
-  -- Autocompletion
-  use "hrsh7th/cmp-nvim-lsp"
-  use "hrsh7th/cmp-buffer"
-  use "hrsh7th/cmp-path"
-  use "hrsh7th/cmp-cmdline"
-  use "hrsh7th/nvim-cmp"
-  use "ray-x/lsp_signature.nvim"
-  -- For vsnip usersp.
-  use({
-    "L3MON4D3/LuaSnip",
-    tag = "v2,*",
-    run = "make install_jsregexp"
-  })
-  use "saadparwaiz1/cmp_luasnip"
-  use "rafamadriz/friendly-snippets"
-
-  use "nvim-tree/nvim-web-devicons"
-  use {
-    "nvim-tree/nvim-tree.lua",
-    requires = {
-      "nvim-tree/nvim-web-devicons",
-    }
-  }
-
-  use "nvim-lualine/lualine.nvim"
   use "mg979/vim-visual-multi"
-  use {
-    "windwp/nvim-autopairs",
-    event = "InsertEnter",
-    config = function()
-      require("nvim-autopairs").setup {}
-    end
-  }
-  use "mbbill/undotree" -- plugins using treesitter power
+  -- use {
+  --   "windwp/nvim-autopairs",
+  --   event = "InsertEnter",
+  --   config = function()
+  --     require("nvim-autopairs").setup {}
+  --   end
+  -- }
 
-  use {
-    'nvim-treesitter/nvim-treesitter',
-    run = function()
-      local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
-      ts_update()
-    end,
-  }
-  use "p00f/nvim-ts-rainbow"
-  use "windwp/nvim-ts-autotag"
-  use "JoosepAlviste/nvim-ts-context-commentstring"
-  use "lukas-reineke/indent-blankline.nvim"
-  use "nvim-treesitter/playground"
   -- 
   -- 	-- Neovim LSP
   use {
@@ -122,8 +135,7 @@ return require("packer").startup(function(use)
   use "neovim/nvim-lspconfig"
   -- 
   -- 
-  -- 	-- Javascript Typescript
-  --   use "jose-elias-alvarez/nvim-lsp-ts-utils"
+  -- Javascript Typescript
   -- 	-- use "dense-analysis/ale"
   -- 	-- use "jose-elias-alvarez/null-ls.nvim"
   -- 
@@ -143,6 +155,12 @@ return require("packer").startup(function(use)
   --   --   end,
   --   -- }
   -- 
+  --
+
+  -- copilot
+  -- use "github/copilot.vim"
+
+
   -- Dap plugin
   use "mfussenegger/nvim-dap"
   use "nvim-neotest/nvim-nio"
@@ -150,7 +168,7 @@ return require("packer").startup(function(use)
   use "theHamsta/nvim-dap-virtual-text"
 
 
-  -- Markdown
+  -- -- Markdown
   use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
 
   use { "dstein64/vim-startuptime", cmd = "StartupTime" }

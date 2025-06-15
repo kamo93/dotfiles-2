@@ -9,7 +9,7 @@ mason_lsp.setup {
   ensure_installed = {
     'vimls',
     'jsonls',
-    'tsserver',
+    'ts_ls',
     'eslint',
     'bashls',
     'html',

@@ -1,7 +1,7 @@
 local servers = { 
   'vimls',
   'jsonls',
-  'tsserver',
+  'ts_ls',
   'eslint',
   'bashls',
   'html',
@@ -10,7 +10,8 @@ local servers = {
   'terraformls',
   'prismals',
   -- 'csharp_ls'
-  'omnisharp'
+  'omnisharp',
+  'markdown_oxide'
 }
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 -- local init_options = require("nvim-lsp-ts-utils").init_options
@@ -75,15 +76,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
--- local servers = { 'vimls', 'jsonls', 'tsserver', 'eslint', 'bashls', 'html', 'tailwindcss' }
+-- local servers = { 'vimls', 'jsonls', 'ts_ls', 'eslint', 'bashls', 'html', 'tailwindcss' }
 -- init_options.plugins = { { 
 --   name = '@styled/typescript-styled-plugin',
 --   location = '@styled/typescript-styled-plugin' 
 -- } }
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 for _, lsp in ipairs(servers) do
-  if lsp == "tsserver" then
-    nvim_lsp.tsserver.setup({
+  if lsp == "ts_ls" then
+    nvim_lsp.ts_ls.setup({
       -- Needed for inlayHints. Merge this table with your settings or copy
       -- it from the source if you want to add your own init_options.
       -- init_options = init_options,
@@ -168,45 +169,64 @@ for _, lsp in ipairs(servers) do
         },
       }
     }
-  -- elseif lsp == "omnisharp" then
-  --   nvim_lsp.omnisharp.setup {
-  --     cmd = { "dotnet", "/home/kamo93/.omnisharp/OmniSharp.dll" },
-  --     -- Enables support for reading code style, naming convention and analyzer
-  --     -- settings from .editorconfig.
-  --     enable_editorconfig_support = true,
-  --
-  --     -- If true, MSBuild project system will only load projects for files that
-  --     -- were opened in the editor. This setting is useful for big C# codebases
-  --     -- and allows for faster initialization of code navigation features only
-  --     -- for projects that are relevant to code that is being edited. With this
-  --     -- setting enabled OmniSharp may load fewer projects and may thus display
-  --     -- incomplete reference lists for symbols.
-  --     enable_ms_build_load_projects_on_demand = false,
-  --
-  --     -- Enables support for roslyn analyzers, code fixes and rulesets.
-  --     enable_roslyn_analyzers = false,
-  --
-  --     -- Specifies whether 'using' directives should be grouped and sorted during
-  --     -- document formatting.
-  --     organize_imports_on_format = false,
-  --
-  --     -- Enables support for showing unimported types and unimported extension
-  --     -- methods in completion lists. When committed, the appropriate using
-  --     -- directive will be added at the top of the current file. This option can
-  --     -- have a negative impact on initial completion responsiveness,
-  --     -- particularly for the first few completion sessions after opening a
-  --     -- solution.
-  --     enable_import_completion = false,
-  --
-  --     -- Specifies whether to include preview versions of the .NET SDK when
-  --     -- determining which version to use for project loading.
-  --     sdk_include_prereleases = true,
-  --
-  --     -- Only run analyzers against open files when 'enableRoslynAnalyzers' is
-  --     -- true
-  --     analyze_open_documents_only = false,
-  --     filetypes = { "cs", "vb", "cshtml" }
-  --   }
+  elseif lsp == "omnisharp" then
+    nvim_lsp.omnisharp.setup {
+      cmd = { "dotnet", "/home/kamo93/Repos/omnisharp-roslyn/bin/Release/OmniSharp.Stdio.Driver/net6.0/OmniSharp.dll" },
+      -- Enables support for reading code style, naming convention and analyzer
+      -- settings from .editorconfig.
+      enable_editorconfig_support = true,
+
+      -- If true, MSBuild project system will only load projects for files that
+      -- were opened in the editor. This setting is useful for big C# codebases
+      -- and allows for faster initialization of code navigation features only
+      -- for projects that are relevant to code that is being edited. With this
+      -- setting enabled OmniSharp may load fewer projects and may thus display
+      -- incomplete reference lists for symbols.
+      enable_ms_build_load_projects_on_demand = false,
+
+      -- Enables support for roslyn analyzers, code fixes and rulesets.
+      enable_roslyn_analyzers = false,
+
+      -- Specifies whether 'using' directives should be grouped and sorted during
+      -- document formatting.
+      organize_imports_on_format = false,
+
+      -- Enables support for showing unimported types and unimported extension
+      -- methods in completion lists. When committed, the appropriate using
+      -- directive will be added at the top of the current file. This option can
+      -- have a negative impact on initial completion responsiveness,
+      -- particularly for the first few completion sessions after opening a
+      -- solution.
+      enable_import_completion = false,
+
+      -- Specifies whether to include preview versions of the .NET SDK when
+      -- determining which version to use for project loading.
+      sdk_include_prereleases = true,
+
+      -- Only run analyzers against open files when 'enableRoslynAnalyzers' is
+      -- true
+      analyze_open_documents_only = false,
+      filetypes = { "cs", "vb", "cshtml" }
+    }
+  elseif lsp == "markdown_oxide" then
+
+    nvim_lsp.markdown_oxide.setup({
+    -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
+    -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
+    capabilities = vim.tbl_deep_extend(
+        'force',
+        capabilities,
+        {
+            workspace = {
+                didChangeWatchedFiles = {
+                    dynamicRegistration = true,
+                },
+            },
+        }
+    ),
+    on_attach = on_attach -- configure your on attach config
+    })
+
   else
     nvim_lsp[lsp].setup {
       on_attach = on_attach,

@@ -1,4 +1,5 @@
 vim.g.do_filetype_lua = 1
+vim.g.markdown_recommended_style = 0
 
 -- neovim config https://neovim.io/doc/user/nvim.html
 vim.o.hlsearch          = true                                  -- When you end search for a pattern highlights	all the results
@@ -9,8 +10,8 @@ vim.o.number            = true                                  -- show number a
 vim.o.autoindent        = true                                  -- copy the current indent from previous line
 vim.o.relativenumber    = true                                  -- set relative numbers aside
 vim.o.shortmess         = vim.o.shortmess.."c"                  -- Avoid showing message extra message when using completion but keep showing other important messages
-vim.o.tabstop           = 2                                     -- the tab spaces default 8 change to 2
-vim.cmd("set softtabstop=0 expandtab")
+-- vim.o.tabstop           = 2                                     -- the tab spaces default 8 change to 2
+vim.cmd("set softtabstop=2 noexpandtab")
 vim.cmd("set cursorline")                                       -- hightlight current line number
 vim.o.shiftwidth        = 2                                     -- define how many columns of whitespace a level of indentation worth
 vim.o.smarttab          = true                                  -- when expandtab and softtabstop is different from shiftwidth let you always put a tab after endline??
@@ -38,10 +39,12 @@ vim.o.termguicolors     = true                                  -- enables 24 bi
 vim.o.laststatus        = 3                                     -- new neovim feature to have just one main status lines
 vim.cmd("set splitright")                                       -- open vssplit on the right
 vim.cmd("set splitbelow")                                       -- open split on the bottom
+vim.o.shadafile = vim.fn.stdpath("data") .. "/shada/main.shada"
+    
+  
 
 -- vim.g.is_bash           = 1                                     -- Automatically stablish .sh files as bash files ## more info -> https://stackoverflow.com/questions/7450395/vim-inconsistently-syntax-highlighting-bash-files
 -- vim.cmd("let g:is_bash=1")
-
 vim.cmd[[
   let g:is_bash=1
   runtime! macros/matchit.vim
@@ -86,3 +89,30 @@ vim.api.nvim_create_autocmd('User', {
     vim.keymap.set('n', 'cc', ":vertical Git commit <CR>", { buffer = true })
   end
 })
+
+-- vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+--   callback = function ()
+--     for _, value in ipairs(vim.api.nvim_list_bufs()) do
+--       local buf = vim.bo[value]
+--       if buf.buflisted and buf.modified then
+-- 	vim.cmd("silent! wall")
+-- 	break;
+--       end
+--     end
+--   end
+-- })
+
+vim.api.nvim_create_user_command('CleanProjOldFiles', function ()
+  print("TODO create function to clean proj files using vim.v.oldfiles, filter")
+  local number_of_files_cwd = 0
+  local file_paths_to_delete = {}
+  for i, file_path in ipairs(vim.v.oldfiles) do
+    if file_path:sub(1, #vim.uv.cwd()) == vim.uv.cwd() and not file_path:find("NvimTree", 1, true) then
+      print("I'm the current project " .. file_path)
+      table.insert(file_paths_to_delete, file_path)
+      number_of_files_cwd = number_of_files_cwd + 1
+    end
+  end
+  print("how many files " .. number_of_files_cwd)
+  print(vim.inspect(file_paths_to_delete))
+end, {})
