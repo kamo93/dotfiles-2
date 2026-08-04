@@ -1,8 +1,9 @@
+REPORTTIME=1
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/kamo93/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -70,10 +71,20 @@ ZSH_THEME="spaceship"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git node vi-mode tmux fast-syntax-highlighting)
+zmodload zsh/datetime
+zmodload zsh/zutil
+START_TIME=$EPOCHREALTIME
+
+plugins=(git node tmux fast-syntax-highlighting spaceship-vi-mode)
+export RPS1="%{$reset_color%}"
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 
 source $ZSH/oh-my-zsh.sh
+END_TIME=$EPOCHREALTIME
+ELAPSED_TIME=$(printf "%.0f" "$(echo "($END_TIME - $START_TIME) * 1000" | bc)")
+echo "🔧 Oh My Zsh plugins loaded in ${ELAPSED_TIME} ms"
+
+spaceship add --before char vi_mode
 
 # User configuration
 
@@ -101,6 +112,10 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 #
+
+isLinux() {
+  echo $OSTYPE | grep -q "linux"
+}
 
 # path for pip3 installationa
 #export PATH=/home/kamo93/.local/bin:$PATH
@@ -164,9 +179,9 @@ export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 # *********** END OPTIONS ***********
 
 # neovim suggestion
-# if [ -n "$TMUX" ]; then
-#     export TERM=screen-256color
-# fi
+if [ -n "$TMUX" ]; then
+    export TERM=screen-256color
+fi
 
 fzf-git-branch(){
 	git rev-parse HEAD > /dev/null 2>&1 || return
@@ -198,7 +213,11 @@ alias fgco='fzf-git-checkout'
 
 # source /usr/share/doc/fzf/examples/key-bindings.zsh
 # source /usr/share/doc/fzf/examples/completion.zsh
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# according to docs https://github.com/junegunn/fzf?tab=readme-ov-file#setting-up-shell-integration
+if command -v fzf >/dev/null 2>&1; then
+  source <(fzf --zsh)
+fi
 
 alias luamake=/home/kamo93/lua-language-server/3rd/luamake/luamake
 
@@ -231,3 +250,16 @@ bindkey -M menuselect 'k' up-line-or-history
 bindkey -M menuselect 'h' backward-char
 bindkey -M menuselect 'l' forward-char
 
+# Spaceship vi_mode
+# spaceship add --before char vi_mode
+
+
+# fnm
+FNM_PATH="/Users/kamo93/Library/Application Support/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="/Users/kamo93/Library/Application Support/fnm:$PATH"
+  eval "`fnm env`"
+fi
+
+# opencode
+export PATH=/Users/kamo93/.opencode/bin:$PATH

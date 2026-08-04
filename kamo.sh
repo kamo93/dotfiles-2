@@ -1,4 +1,4 @@
-#!usr/bin/env bash
+#!/usr/bin/env bash
 
 create_links() {
   ln -sf ~/.dotfiles/.zshrc ~/.zshrc
@@ -32,15 +32,9 @@ function pckg_download {
 create_links
 
 # install z
-echo "Install z"
-echo "Downloading z"
-pckg_download "~/z.sh" "https://raw.githubusercontent.com/rupa/z/master/z.sh" 
-
-#install fnm
-pckg_download "" "https://fnm.vercel.app/install" | bash
-
-#install oh-my-zsh
-pckg_download "" "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+# echo "Install z"
+# echo "Downloading z"
+# pckg_download "~/z.sh" "https://raw.githubusercontent.com/rupa/z/master/z.sh" 
 
 # install zsh
 #if isLinux; then
@@ -48,7 +42,53 @@ pckg_download "" "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools
 #  #how to install on mac
 #fi
 
-# if isLinux; then 
+function customEcho() {
+	echo " ======================= $1 ====================== "
+}
+
+# install ozm
+# TODO no need to use ozm
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+	customEcho "⇣ installing ozm ⇣"
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+fi
+
+customEcho "here"
+
+if isLinux; then 
+	echo "is linux"
+
+	#install fnm
+	 pckg_download "" "https://fnm.vercel.app/install" | bash
+
+	#install oh-my-zsh
+	pckg_download "" "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+else
+	echo "is not linux"
+	customEcho "⇣ Installing brew ⇣"
+	if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+		echo "✅ Homebrew installed!"
+		echo >> /Users/kamo93/.zprofile
+		echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/kamo93/.zprofile
+		eval "$(/opt/homebrew/bin/brew shellenv)"
+		omz reload
+		# install fnm
+		customEcho "⇣ installing fnm ⇣"
+		curl -fsSL https://fnm.vercel.app/install | bash
+		customEcho "✅ fnm installed!"
+		brew install fzf
+		brew install zoxide
+		brew install git-delta
+		brew install neovim
+		brew install tmux
+	else
+		echo "❌ Homebrew installation failed!"
+		exit 1
+	fi
+	
+fi
+
+customEcho "here 2"
 #   pckg_installed "zsh"
 #   chsh -s $(which zsh) $(whoami)
 #   # install neovim

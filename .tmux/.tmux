@@ -1,1 +1,1 @@
-./.tmux
+/Users/kamo93/.dotfiles/.tmux

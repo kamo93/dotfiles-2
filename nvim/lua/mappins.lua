@@ -116,3 +116,22 @@ vim.keymap.set('n', '<leader>j', '<cmd>cprev<CR>zz')
 --   end
 -- )
 
+if vim.g.vscode then
+  vim.keymap.set("n", "gcc", "<Plug>VSCodeComentaryline");
+  -- Atajo para todos los archivos del proyecto
+  vim.keymap.set('n', '<leader>ff', function()
+    require('vscode').action('workbench.action.quickOpen')
+  end, { desc = "Quick Open: todos los archivos" })
+
+  -- Atajo para solo archivos Git
+  vim.keymap.set('n', '<leader>fg', function()
+    require('vscode').action('workbench.action.quickOpen', { args = { '#git' } })
+  end, { desc = "Quick Open: solo git" })
+
+  -- Atajo para abrir el file tree
+  vim.keymap.set("n", "<leader>n", function()
+    vim.fn.VSCodeNotify("workbench.action.toggleSidebarVisibility")
+  end, { desc = "Toggle File Explorer" })
+  print("vscode mappings");  
+
+end
