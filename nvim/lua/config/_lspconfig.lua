@@ -14,8 +14,7 @@ local servers = {
   'markdown_oxide'
 }
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
--- local init_options = require("nvim-lsp-ts-utils").init_options
-local nvim_lsp = require('lspconfig')
+local nvim_lsp = vim.lsp.config
 
 local function on_list_extend(options)
   local items = options.items
@@ -82,164 +81,163 @@ vim.api.nvim_create_autocmd('LspAttach', {
 --   location = '@styled/typescript-styled-plugin' 
 -- } }
 capabilities.textDocument.completion.completionItem.snippetSupport = true
-for _, lsp in ipairs(servers) do
-  if lsp == "ts_ls" then
-    nvim_lsp.ts_ls.setup({
-      -- Needed for inlayHints. Merge this table with your settings or copy
-      -- it from the source if you want to add your own init_options.
-      -- init_options = init_options,
-      capabilities = capabilities,
-      --
-      on_attach = function(client, bufnr)
-        local ts_utils = require("nvim-lsp-ts-utils")
 
-        -- defaults
-        ts_utils.setup({
-          debug = false,
-          disable_commands = false,
-          enable_import_on_completion = true,
-          -- import all
-          import_all_timeout = 5000, -- ms
-          -- lower numbers = higher priority
-          import_all_priorities = {
-            same_file = 1, -- add to existing import statement
-            local_files = 2, -- git files or files with relative path markers
-            buffer_content = 3, -- loaded buffer content
-            buffers = 4, -- loaded buffer names
-          },
-          import_all_scan_buffers = 100,
-          import_all_select_source = true,
-          always_organize_imports = true,
+-- Configuracion por defecto para los lsp servers
+nvim_lsp['*'] = {
+  on_attach = on_attach,
+  capabilities = capabilities,
+}
 
-          -- filter diagnostics
-          filter_out_diagnostics_by_severity = {},
-          filter_out_diagnostics_by_code = {},
+nvim_lsp.ts_ls = {
+  on_attach = function(client, bufnr)
+    local opts = { buffer = bufnr, silent = true }
+    vim.keymap.set("n", "gs", function()
+      vim.lsp.buf.code_action({
+	filter = function(action)
+	  return action.kind == "source.organizeImports"
+	end,
+      })
+    end, opts)
+    vim.keymap.set("n", "<space>gi", function()
+      vim.lsp.buf.code_action({
+	filter = function(action)
+	  return action.kind == "source.addMissingImports"
+	end,
+      })
+    end, opts)
+  end,
+}
+--
+nvim_lsp.bashls = {
+  filetypes = { "sh", "zsh", "bash"},
+}
+--
+-- -- nvim_lsp.eslint = {
+--   --     capabilities = capabilities,
+--   --     filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue", "svelte", "astro", "markdown" }
+--   --   }
+--
+nvim_lsp.lua_ls = {
+  cmd = { "lua-language-server" },
+  filetypes = { "lua" },
+ --  on_init = function(client)
+ --    if client.workspace_folders then
+ --      local path = client.workspace_folders[1].name
+ --      if
+ --        path ~= vim.fn.stdpath('config')
+ --        and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc'))
+ --      then
+ --        return
+ --      end
+ --    end
+	--
+ --    client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+ --      runtime = {
+ --        -- Tell the language server which version of Lua you're using (most
+ --        -- likely LuaJIT in the case of Neovim)
+ --        version = 'LuaJIT',
+ --        -- Tell the language server how to find Lua modules same way as Neovim
+ --        -- (see `:h lua-module-load`)
+ --        path = {
+ --          'lua/?.lua',
+ --          'lua/?/init.lua',
+ --        },
+ --      },
+ --      -- Make the server aware of Neovim runtime files
+ --      workspace = {
+ --        checkThirdParty = false,
+ --        library = {
+ --          vim.env.VIMRUNTIME,
+ --          -- For LSP Settings Type Annotations: https://github.com/neovim/nvim-lspconfig#lsp-settings-type-annotations
+ --          vim.api.nvim_get_runtime_file("lua/lspconfig", false)[1],
+ --        },
+ --        -- Or pull in all of 'runtimepath'.
+ --        -- NOTE: this is a lot slower and will cause issues when working on
+ --        -- your own configuration.
+ --        -- See https://github.com/neovim/nvim-lspconfig/issues/3189
+ --        -- library = vim.api.nvim_get_runtime_file('', true),
+ --      },
+ --    })
+ --  end,
+ --  settings = {
+ --    Lua = {
+ --      runtime = {
+	-- -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+	-- version = 'LuaJIT',
+	-- path = runtime_path,
+ --      },
+ --      diagnostics = {
+	-- -- Get the language server to recognize the `vim` global
+	-- globals = { 'vim' },
+ --      },
+ --      workspace = {
+	-- -- Make the server aware of Neovim runtime files
+	-- library = vim.api.nvim_get_runtime_file("", true)
+ --      },
+ --      telemetry = {
+	-- -- Do not send telemetry data containing a randomized but unique identifier
+	-- enable = false
+ --      }
+ --    },
+ --  },
+}
 
-          -- inlay hints
-          auto_inlay_hints = false,
-          inlay_hints_highlight = "Comment",
+nvim_lsp.omnisharp = {
+  cmd = { "dotnet", "/home/kamo93/Repos/omnisharp-roslyn/bin/Release/OmniSharp.Stdio.Driver/net6.0/OmniSharp.dll" },
+  -- Enables support for reading code style, naming convention and analyzer
+  -- settings from .editorconfig.
+  enable_editorconfig_support = true,
 
-          -- update imports on file move
-          update_imports_on_move = false,
-          require_confirmation_on_move = false,
-          watch_dir = nil,
-        })
+  -- If true, MSBuild project system will only load projects for files that
+  -- were opened in the editor. This setting is useful for big C# codebases
+  -- and allows for faster initialization of code navigation features only
+  -- for projects that are relevant to code that is being edited. With this
+  -- setting enabled OmniSharp may load fewer projects and may thus display
+  -- incomplete reference lists for symbols.
+  enable_ms_build_load_projects_on_demand = false,
 
-        -- required to fix code action ranges and filter diagnostics
-        ts_utils.setup_client(client)
+  -- Enables support for roslyn analyzers, code fixes and rulesets.
+  enable_roslyn_analyzers = false,
 
-        -- no default maps, so you may want to define some here
-        local opts = { silent = true }
-        vim.api.nvim_buf_set_keymap(bufnr, "n", "gs", ":TSLspOrganize<CR>", opts)
-        -- vim.api.nvim_buf_set_keymap(bufnr, "n", "gr", ":TSLspRenameFile<CR>", opts)
-        vim.api.nvim_buf_set_keymap(bufnr, "n", "<space>gi", ":TSLspImportAll<CR>", opts)
-      end,
-    })
-  elseif lsp == "bashls" then
-    nvim_lsp.bashls.setup {
-      filetypes = { "sh", "zsh", "bash"},
+  -- Specifies whether 'using' directives should be grouped and sorted during
+  -- document formatting.
+  organize_imports_on_format = false,
+
+  -- Enables support for showing unimported types and unimported extension
+  -- methods in completion lists. When committed, the appropriate using
+  -- directive will be added at the top of the current file. This option can
+  -- have a negative impact on initial completion responsiveness,
+  -- particularly for the first few completion sessions after opening a
+  -- solution.
+  enable_import_completion = false,
+
+  -- Specifies whether to include preview versions of the .NET SDK when
+  -- determining which version to use for project loading.
+  sdk_include_prereleases = true,
+
+  -- Only run analyzers against open files when 'enableRoslynAnalyzers' is
+  -- true
+  analyze_open_documents_only = false,
+  filetypes = { "cs", "vb", "cshtml" }
+}
+
+nvim_lsp.markdown_oxide = {
+  -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
+  -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
+  capabilities = vim.tbl_deep_extend(
+    'force',
+    capabilities,
+    {
+      workspace = {
+	didChangeWatchedFiles = {
+	  dynamicRegistration = true,
+	},
+      },
     }
-  -- elseif lsp == "eslint" then
-  --   nvim_lsp.eslint.setup{
-  --     capabilities = capabilities,
-  --     filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue", "svelte", "astro", "markdown" }
-  --   }
-  elseif lsp == "lua_ls" then
-    nvim_lsp.lua_ls.setup {
-      capabilities = capabilities,
-      settings = {
-        Lua = {
-          runtime = {
-            -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-            version = 'LuaJIT',
-            path = runtime_path,
-          },
-          diagnostics = {
-            -- Get the language server to recognize the `vim` global
-            globals = { 'vim' },
-          },
-          workspace = {
-            -- Make the server aware of Neovim runtime files
-            library = vim.api.nvim_get_runtime_file("", true)
-          },
-          telemetry = {
-            -- Do not send telemetry data containing a randomized but unique identifier
-            enable = false
-          }
-        },
-      }
-    }
-  elseif lsp == "omnisharp" then
-    nvim_lsp.omnisharp.setup {
-      cmd = { "dotnet", "/home/kamo93/Repos/omnisharp-roslyn/bin/Release/OmniSharp.Stdio.Driver/net6.0/OmniSharp.dll" },
-      -- Enables support for reading code style, naming convention and analyzer
-      -- settings from .editorconfig.
-      enable_editorconfig_support = true,
+  )
+}
 
-      -- If true, MSBuild project system will only load projects for files that
-      -- were opened in the editor. This setting is useful for big C# codebases
-      -- and allows for faster initialization of code navigation features only
-      -- for projects that are relevant to code that is being edited. With this
-      -- setting enabled OmniSharp may load fewer projects and may thus display
-      -- incomplete reference lists for symbols.
-      enable_ms_build_load_projects_on_demand = false,
-
-      -- Enables support for roslyn analyzers, code fixes and rulesets.
-      enable_roslyn_analyzers = false,
-
-      -- Specifies whether 'using' directives should be grouped and sorted during
-      -- document formatting.
-      organize_imports_on_format = false,
-
-      -- Enables support for showing unimported types and unimported extension
-      -- methods in completion lists. When committed, the appropriate using
-      -- directive will be added at the top of the current file. This option can
-      -- have a negative impact on initial completion responsiveness,
-      -- particularly for the first few completion sessions after opening a
-      -- solution.
-      enable_import_completion = false,
-
-      -- Specifies whether to include preview versions of the .NET SDK when
-      -- determining which version to use for project loading.
-      sdk_include_prereleases = true,
-
-      -- Only run analyzers against open files when 'enableRoslynAnalyzers' is
-      -- true
-      analyze_open_documents_only = false,
-      filetypes = { "cs", "vb", "cshtml" }
-    }
-  elseif lsp == "markdown_oxide" then
-
-    nvim_lsp.markdown_oxide.setup({
-    -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
-    -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
-    capabilities = vim.tbl_deep_extend(
-        'force',
-        capabilities,
-        {
-            workspace = {
-                didChangeWatchedFiles = {
-                    dynamicRegistration = true,
-                },
-            },
-        }
-    ),
-    on_attach = on_attach -- configure your on attach config
-    })
-
-  else
-    nvim_lsp[lsp].setup {
-      on_attach = on_attach,
-      capabilities = capabilities,
-      sync = true,
-      root_dir = function(fname)
-        return vim.loop.cwd()
-      end;
-    }
-  end
-end
-
-
+vim.lsp.enable(servers)
 vim.diagnostic.config({
   virtual_text = {
     source = "always"
@@ -248,19 +246,20 @@ vim.diagnostic.config({
     source = "always"
   },
 })
+--
+-- -- config bash-language-server
+-- -- vim.cmd([[
+-- -- let g:LanguageClient_serverCommands = {
+-- -- 	\ 'sh': ['bash-language-server', 'start'],
+-- -- 	\ 'zsh': ['bash-language-server', 'start'] 
+-- -- 	\}
+-- -- ]])
+--
+-- -- https://github.com/hashicorp/terraform-ls/blob/main/docs/USAGE.md
+-- vim.api.nvim_create_autocmd({"BufWritePre"}, {
+--   pattern = {"*.tf", "*.tfvars"},
+--   callback = function()
+--     vim.lsp.buf.format()
+--   end,
+-- })
 
--- config bash-language-server
--- vim.cmd([[
--- let g:LanguageClient_serverCommands = {
--- 	\ 'sh': ['bash-language-server', 'start'],
--- 	\ 'zsh': ['bash-language-server', 'start'] 
--- 	\}
--- ]])
-
--- https://github.com/hashicorp/terraform-ls/blob/main/docs/USAGE.md
-vim.api.nvim_create_autocmd({"BufWritePre"}, {
-  pattern = {"*.tf", "*.tfvars"},
-  callback = function()
-    vim.lsp.buf.format()
-  end,
-})
