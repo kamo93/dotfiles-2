@@ -40,6 +40,7 @@ vim.o.laststatus        = 3                                     -- new neovim fe
 vim.cmd("set splitright")                                       -- open vssplit on the right
 vim.cmd("set splitbelow")                                       -- open split on the bottom
 vim.o.shadafile = vim.fn.stdpath("data") .. "/shada/main.shada"
+vim.g.netrw_liststyle = 3                                       -- Set prefered style for netrw 3 === tree list
     
   
 

@@ -56,9 +56,19 @@ vim.keymap.set('t', '<C-\\>s', '<C-\\><C-n>:split +term<CR>', { noremap = true, 
 
 -- **** End term mappins ****
 
--- quickfix mappings
--- vim.keymap.set('n', '<C-C>', ":cclose<CR>", { noremap = true, silent = true })
+-- **** Netrw mappins **** 
+-- create a map to open netrw Explorer
+vim.keymap.set('n', '<leader>n', function ()
+  if vim.bo.filetype == 'netrw' then
+    vim.cmd('Rexplore')
+  else
+    vim.cmd('Explore')
+  end
+end, { noremap = true, silent = true})
 
+-- **** END Netrw mappins **** 
+
+-- **** Yank mappins ****
 -- paste with indent
 vim.keymap.set('n', 'p', "p'[v']=<CR>", { noremap = true, silent = true })
 
@@ -71,6 +81,8 @@ vim.keymap.set('n', '<leader>y', '"+y', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>Y', '"+Y', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>v', '"+p', { noremap = true, silent = true })
 
+-- **** END yank mappins ****
+
 vim.keymap.set('n', 'J', 'mzJ`z')
 
 -- move and center
@@ -79,6 +91,9 @@ vim.keymap.set('n', '<C-d>', '<C-d>zz', { noremap = true, silent = true })
 vim.keymap.set('n', 'n', 'nzzzv')
 vim.keymap.set('n', 'N', 'Nzzzv')
 
+
+-- **** quickfix mappings ****
+-- vim.keymap.set('n', '<C-C>', ":cclose<CR>", { noremap = true, silent = true })
 
 -- toggle quickfix 
 function ToggleQuickFix()
@@ -101,6 +116,7 @@ vim.keymap.set('n', '<C-Q>', ToggleQuickFix, { noremap = true, silent = true })
 -- move fast on quickfix list
 vim.keymap.set('n', '<leader>k', '<cmd>cnext<CR>zz')
 vim.keymap.set('n', '<leader>j', '<cmd>cprev<CR>zz')
+
 
 -- vim.keymap.set(
 --   'n', 
@@ -135,3 +151,6 @@ if vim.g.vscode then
   print("vscode mappings");  
 
 end
+
+-- maximo foco en el buffer actual
+vim.keymap.set('n', '<C-S-Up>', '<C-w>_')
