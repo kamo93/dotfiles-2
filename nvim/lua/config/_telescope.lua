@@ -167,12 +167,17 @@ vim.keymap.set(
   { noremap = true, silent = true }
 )
 
+local function set_search_title(search_query)
+  local look_for_prompt = "Looking for > "
+  return look_for_prompt .. '"' .. search_query .. '"'
+end
+
 local function setSelectedValue()
   local _, startRow, startCol = unpack(vim.fn.getpos("'<"))
   local _, endRow, endCol = unpack(vim.fn.getpos("'>"))
   local selected_text = vim.api.nvim_buf_get_text(0, startRow - 1, startCol - 1, endRow - 1, endCol, {})
   local search_query = selected_text[1]
-  builtin.grep_string({ search = search_query, initial_mode = 'normal' })
+  builtin.grep_string({ search = search_query, initial_mode = "normal", prompt_title = set_search_title(search_query)})
 end
 
 _G.setSelectedValue = setSelectedValue;
@@ -188,7 +193,7 @@ vim.keymap.set(
   "n",
   "<leader>pw",
   function()
-    builtin.grep_string({ initial_mode = 'normal', prompt_title = "Looking for > " .. vim.fn.expand("<cword>"), dynamic_preview_title = true })
+    builtin.grep_string({ initial_mode = 'normal', prompt_title = set_search_title(vim.fn.expand("<cword>")), dynamic_preview_title = true })
   end,
   { noremap = true, silent = true }
 )
