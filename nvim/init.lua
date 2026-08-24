@@ -1,3 +1,7 @@
+-- NEED TO SET LEADER BEFORE LAZY LOAD
+vim.keymap.set('n', '<Space>', '<NOP>', { noremap = true, silent = true })
+vim.g.mapleader = ' '
+
 require("config.lazy")
 require("settings")
 require("mappins")

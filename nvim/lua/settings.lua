@@ -22,8 +22,10 @@ vim.cmd("set noswapfile")                                       -- swapfiles are
 vim.cmd("set nobackup")                                         -- after you overwrite a buffer save a copy this disable that I use undotree
 vim.cmd("set nocompatible")                                     -- ??
 vim.cmd("set noshowmode")                                       -- hide --INSERT-- mostly for statusline dont appear twice
-vim.cmd("exec 'set undodir='.stdpath('config').'/undodir'")     -- set the folder for the undotree plugin
+-- vim.cmd("exec 'set undodir='.stdpath('config').'/undodir'")     -- set the folder for the undotree plugin
 vim.o.undofile          = true
+vim.o.undodir           = vim.fn.expand(vim.fn.stdpath('config')..'.undodir') --  set new folder of undodir 
+vim.o.undolevels        = 500                                   -- Number of changes save to get back default 1000
 vim.cmd("set colorcolumn=100")                                  -- spaces to show the color column
 vim.o.completeopt       = 'menuone,noinsert,noselect'           -- config for ui lsp works correctly
 vim.o.mouse             = 'a'                                   -- mouse active for all modes

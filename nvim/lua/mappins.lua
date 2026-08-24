@@ -1,5 +1,3 @@
-vim.keymap.set('n', '<Spce>', '<NOP>', { noremap = true, silent = true })
-vim.g.mapleader = ' '
 
 vim.keymap.set('n', '<esc>', '<silent>', { noremap = true, silent = true })
 
@@ -43,30 +41,30 @@ vim.keymap.set('n', '<leader>n', ':noh<cr>', { silent = true })
 vim.keymap.set('n', 'U', '<C-^>', { noremap = true, silent = true })
 
 -- **** Term mappins ****
-vim.keymap.set('t', '<C-\\>N', "<C-\\><C-n>", { noremap = true, silent = true }) -- exit terminal mode
+vim.keymap.set('t', '<C-\\>N', "<C-\\><C-n>", { noremap = true, silent = true })                 -- exit terminal mode
 vim.keymap.set('n', '<leader>t', ":tabnew <CR>:terminal<CR>", { noremap = true, silent = true }) -- new terminal
-vim.keymap.set('t', "<C-\\>c", "<C-\\><C-n>gT", { noremap = true, silent = false }) -- move previous tab in terminal mode usually the previous tab should be cwd
+vim.keymap.set('t', "<C-\\>c", "<C-\\><C-n>gT", { noremap = true, silent = false })              -- move previous tab in terminal mode usually the previous tab should be cwd
 -- Movement easy while being on terminal mode
 vim.keymap.set('t', "<C-\\>l", "<C-\\><C-n><C-w>li", { noremap = true, silent = false })
 vim.keymap.set('t', "<C-\\>h", "<C-\\><C-n><C-w>hi", { noremap = true, silent = false })
 vim.keymap.set('t', "<C-\\>k", "<C-\\><C-n><C-w>ki", { noremap = true, silent = false })
 vim.keymap.set('t', "<C-\\>j", "<C-\\><C-n><C-w>ji", { noremap = true, silent = false })
 vim.keymap.set('t', '<C-\\>v', '<C-\\><C-n>:vsplit +term<CR>', { noremap = true, silent = true }) -- Terminal mode create split vertical term
-vim.keymap.set('t', '<C-\\>s', '<C-\\><C-n>:split +term<CR>', { noremap = true, silent = true }) -- Terminal mode create split horizontal term
+vim.keymap.set('t', '<C-\\>s', '<C-\\><C-n>:split +term<CR>', { noremap = true, silent = true })  -- Terminal mode create split horizontal term
 
 -- **** End term mappins ****
 
--- **** Netrw mappins **** 
+-- **** Netrw mappins ****
 -- create a map to open netrw Explorer
-vim.keymap.set('n', '<leader>n', function ()
-  if vim.bo.filetype == 'netrw' then
-    vim.cmd('Rexplore')
-  else
-    vim.cmd('Explore')
-  end
-end, { noremap = true, silent = true})
+vim.keymap.set('n', '<leader>n', function()
+	if vim.bo.filetype == 'netrw' then
+		vim.cmd('Rexplore')
+	else
+		vim.cmd('Explore')
+	end
+end, { noremap = true, silent = true })
 
--- **** END Netrw mappins **** 
+-- **** END Netrw mappins ****
 
 -- **** Yank mappins ****
 -- paste with indent
@@ -95,21 +93,21 @@ vim.keymap.set('n', 'N', 'Nzzzv')
 -- **** quickfix mappings ****
 -- vim.keymap.set('n', '<C-C>', ":cclose<CR>", { noremap = true, silent = true })
 
--- toggle quickfix 
+-- toggle quickfix
 function ToggleQuickFix()
-  local quickfix_open = false
-  for _, win in ipairs(vim.fn.getwininfo()) do
-    if win.quickfix == 1 then
-      quickfix_open = true
-      break
-    end
-  end
-  if quickfix_open then
-    vim.cmd('cclose')
-  end
-  if not quickfix_open and #vim.fn.getqflist() > 0 then 
-    vim.cmd('copen')
-  end
+	local quickfix_open = false
+	for _, win in ipairs(vim.fn.getwininfo()) do
+		if win.quickfix == 1 then
+			quickfix_open = true
+			break
+		end
+	end
+	if quickfix_open then
+		vim.cmd('cclose')
+	end
+	if not quickfix_open and #vim.fn.getqflist() > 0 then
+		vim.cmd('copen')
+	end
 end
 
 vim.keymap.set('n', '<C-Q>', ToggleQuickFix, { noremap = true, silent = true })
@@ -119,38 +117,41 @@ vim.keymap.set('n', '<leader>j', '<cmd>cprev<CR>zz')
 
 
 -- vim.keymap.set(
---   'n', 
---   '<leader>l', 
---   function() 
+--   'n',
+--   '<leader>l',
+--   function()
 --     local buf = vim.api.nvim_get_current_buf()
 --     local ft = vim.api.nvim_buf_get_option(buf, "filetype")
 --     local js_languages = { javascript = true, javascriptreact = true, typescript = true, typescriptreact = true }
 --     if js_languages[ft] then
-      
+
 --     end
 
 --   end
 -- )
 
 if vim.g.vscode then
-  vim.keymap.set("n", "gcc", "<Plug>VSCodeComentaryline");
-  -- Atajo para todos los archivos del proyecto
-  vim.keymap.set('n', '<leader>ff', function()
-    require('vscode').action('workbench.action.quickOpen')
-  end, { desc = "Quick Open: todos los archivos" })
+	vim.keymap.set("n", "gcc", "<Plug>VSCodeComentaryline");
+	-- Atajo para todos los archivos del proyecto
+	vim.keymap.set('n', '<leader>ff', function()
+		require('vscode').action('workbench.action.quickOpen')
+	end, { desc = "Quick Open: todos los archivos" })
 
-  -- Atajo para solo archivos Git
-  vim.keymap.set('n', '<leader>fg', function()
-    require('vscode').action('workbench.action.quickOpen', { args = { '#git' } })
-  end, { desc = "Quick Open: solo git" })
+	-- Atajo para solo archivos Git
+	vim.keymap.set('n', '<leader>fg', function()
+		require('vscode').action('workbench.action.quickOpen', { args = { '#git' } })
+	end, { desc = "Quick Open: solo git" })
 
-  -- Atajo para abrir el file tree
-  vim.keymap.set("n", "<leader>n", function()
-    vim.fn.VSCodeNotify("workbench.action.toggleSidebarVisibility")
-  end, { desc = "Toggle File Explorer" })
-  print("vscode mappings");  
-
+	-- Atajo para abrir el file tree
+	vim.keymap.set("n", "<leader>n", function()
+		vim.fn.VSCodeNotify("workbench.action.toggleSidebarVisibility")
+	end, { desc = "Toggle File Explorer" })
+	print("vscode mappings");
 end
 
 -- maximo foco en el buffer actual
 vim.keymap.set('n', '<C-S-Up>', '<C-w>_')
+
+-- **** Undotree plugin maps ****
+vim.keymap.set('n', '<leader><F5>', vim.cmd.UndotreeToggle)
+-- **** End Undotree plugin maps ****
