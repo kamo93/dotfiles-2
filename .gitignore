@@ -1,2 +1,9 @@
 .zsh/.zsh_history
 nvim/undodir
+
+# Ignore all downloaded plugins
+.tmux/plugins/*
+
+# Exception: Do not ignore TPM itself (if you want to track it)
+!.tmux/plugins/tpm
+
