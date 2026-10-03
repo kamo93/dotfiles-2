@@ -155,3 +155,8 @@ vim.keymap.set('n', '<C-S-Up>', '<C-w>_')
 -- **** Undotree plugin maps ****
 vim.keymap.set('n', '<leader><F5>', vim.cmd.UndotreeToggle)
 -- **** End Undotree plugin maps ****
+
+-- **** Session/Project maps ****
+vim.keymap.set('n', '<leader>ps', function() require("config.session").save_session() end, { desc = "Save project session" })
+vim.keymap.set('n', '<leader>pp', function() require("config.session").telescope_sessions() end, { desc = "Pick project session" })
+-- **** End Session/Project maps ****

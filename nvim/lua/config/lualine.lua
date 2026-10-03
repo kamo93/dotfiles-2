@@ -32,7 +32,18 @@ require'lualine'.setup {
         path = 1
       }
     },
-    lualine_x = {'encoding', 'fileformat', 'filetype'},
+    lualine_x = {
+      {
+        function()
+          local name = vim.g.session_tracking
+          if name then return "[" .. name .. "]" end
+          return ""
+        end,
+        cond = function() return vim.g.session_tracking ~= nil end,
+        color = { fg = "#a6e3a1" },
+      },
+      'encoding', 'fileformat', 'filetype'
+    },
     lualine_y = {'progress'},
     lualine_z = {'location'}
   },

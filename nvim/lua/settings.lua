@@ -39,6 +39,7 @@ vim.api.nvim_command('autocmd FocusGained * checktime')
 vim.api.nvim_command('autocmd CursorHold * checktime')
 vim.o.termguicolors     = true                                  -- enables 24 bit rgb color
 vim.o.laststatus        = 3                                     -- new neovim feature to have just one main status lines
+vim.o.sessionoptions    = "buffers,curdir,folds,help,tabpages,winsize,winpos"
 vim.cmd("set splitright")                                       -- open vssplit on the right
 vim.cmd("set splitbelow")                                       -- open split on the bottom
 vim.o.shadafile = vim.fn.stdpath("data") .. "/shada/main.shada"
